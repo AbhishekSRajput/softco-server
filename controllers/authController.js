@@ -5,10 +5,10 @@ const prisma = require('../prismaClient');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   const existingUser = await prisma.user.findUnique({
-    where: { username },
+    where: { email },
   });
 
   if (existingUser) {
@@ -18,7 +18,7 @@ const register = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.user.create({
     data: {
-      username,
+      email,
       password: hashedPassword,
     },
   });
@@ -27,17 +27,17 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   const user = await prisma.user.findUnique({
-    where: { username },
+    where: { email },
   });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+    return res.status(401).json({ message: 'Invalid email or password. Please try again.' });
   }
 
-  const token = jwt.sign({ username: user.username, id: user.id }, JWT_SECRET, {
+  const token = jwt.sign({ email: user.email, id: user.id }, JWT_SECRET, {
     expiresIn: '1h',
   });
 

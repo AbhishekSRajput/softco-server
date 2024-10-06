@@ -8,7 +8,7 @@ router.post('/register', register);
 router.post('/login', login);
 
 router.get('/dashboard', protect, (req, res) => {
-  res.json({ message: `Welcome, ${req.user.username}` });
+  res.json({ message: `Welcome, ${req.user.firstName}` });
 });
 
 module.exports = router;
