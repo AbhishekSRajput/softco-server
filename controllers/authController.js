@@ -5,7 +5,7 @@ const prisma = require('../prismaClient');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, username } = req.body;
 
   const existingUser = await prisma.user.findUnique({
     where: { email },
@@ -19,10 +19,11 @@ const register = async (req, res) => {
   const newUser = await prisma.user.create({
     data: {
       email,
-      password: hashedPassword,
+      username,
+      password: hashedPassword
     },
   });
-
+  delete newUser.password
   return res.status(201).json({ message: 'User created successfully', user: newUser });
 };
 
